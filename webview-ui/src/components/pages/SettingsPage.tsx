@@ -39,7 +39,7 @@ export function SettingsPage() {
                   className={cn(
                     'w-full text-left px-3 py-2 rounded-lg text-xs transition-all duration-150',
                     tab === item.value
-                      ? 'bg-[rgba(0,224,144,0.1)] text-[var(--tv-green)]'
+                      ? 'bg-[rgba(0,224,144,0.1)] text-[var(--tv-purple)]'
                       : 'text-[var(--tv-text2)] hover:bg-[var(--tv-bg3)] hover:text-[var(--tv-text)]'
                   )}>
                   {item.label}

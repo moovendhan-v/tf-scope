@@ -10,10 +10,10 @@ import { cn } from '@/lib/utils';
 import type { TerraformFile, Page } from '../../types';
 
 const ACTIVITIES = [
-  { color: 'var(--tv-green)',  msg: 'tf-scope scanned workspace files',        time: 'just now' },
-  { color: 'var(--tv-blue)',   msg: 'Detected .tf, .tfstate and plan files',   time: '1m ago'   },
-  { color: 'var(--tv-amber)',  msg: 'Cost estimates calculated',                time: '1m ago'   },
-  { color: 'var(--tv-purple)', msg: 'Dependency graph built',                  time: '1m ago'   },
+  { color: 'var(--tv-purple)',  msg: 'tf-scope scanned workspace files',        time: 'just now' },
+  { color: 'var(-tv-blue)',   msg: 'Detected .tf, .tfstate and plan files',   time: '1m ago'   },
+  { color: 'var(--tv-purple)', msg: 'Cost estimates calculated',                time: '1m ago'   },
+  { color: 'var(--tv-purple)',  msg: 'Dependency graph built',                  time: '1m ago'   },
 ];
 
 export function DashboardPage({ files, onOpenFile, onNavigate }: {
@@ -32,7 +32,7 @@ export function DashboardPage({ files, onOpenFile, onNavigate }: {
       <div className="p-7 space-y-7">
         {/* Stat row */}
         <div className="grid grid-cols-4 gap-3.5">
-          <StatCard num={files.length}  label="Total Files"      color="var(--tv-green)"  icon={<FileCode2 size={18}/>}  delay="0s"   />
+          <StatCard num={files.length}  label="Total Files"      color="var(--tv-purple)"  icon={<FileCode2 size={18}/>}  delay="0s"   />
           <StatCard num={total}         label="Total Resources"  color="var(--tv-text)"   icon={<Database size={18}/>}   delay=".05s" />
           <StatCard num={tfFiles.length} label=".tf Files"       color="var(--tv-purple)" icon={<FileCode2 size={18}/>}  delay=".1s"  />
           <StatCard num={pending}       label="Pending Changes"  color={pending > 0 ? 'var(--tv-red)' : 'var(--tv-text3)'}
@@ -79,7 +79,7 @@ export function DashboardPage({ files, onOpenFile, onNavigate }: {
             <SectionHeader title="Activity" />
             <Card>
               {[...ACTIVITIES, ...files.map(f => ({
-                color: 'var(--tv-blue)',
+                color: 'var(--tv-purple)',
                 msg: `${f.name} parsed — ${f.resources.length} resources`,
                 time: fmtTime(f.ts),
               }))].slice(0, 7).map((a, i, arr) => (
@@ -104,7 +104,7 @@ export function DashboardPage({ files, onOpenFile, onNavigate }: {
               <TypeCard label=".tf Configuration" count={tfFiles.length}    color="var(--tv-purple)" icon="📄"
                 desc={`${tfFiles.reduce((a,f) => a+f.resources.length, 0)} resources`}
                 files={tfFiles} onOpenFile={onOpenFile} />
-              <TypeCard label=".tfstate Files"    count={stateFiles.length} color="var(--tv-blue)"   icon="💾"
+              <TypeCard label=".tfstate Files"    count={stateFiles.length} color="var(--tv-purple)"   icon="💾"
                 desc={`${stateFiles.reduce((a,f) => a+f.resources.length, 0)} tracked`}
                 files={stateFiles} onOpenFile={onOpenFile} />
               <TypeCard label="Plan Files"        count={planFiles.length}  color="var(--tv-amber)"  icon="📋"
@@ -145,7 +145,7 @@ function SectionHeader({ title, count, action, onAction }: {
       )}
       <div className="flex-1" />
       {action && onAction && (
-        <button onClick={onAction} className="text-[11px] text-[var(--tv-green)] hover:opacity-80 flex items-center gap-1">
+        <button onClick={onAction} className="text-[11px] text-[var(--tv-purple)] hover:opacity-80 flex items-center gap-1">
           {action} <ArrowRight size={10} />
         </button>
       )}

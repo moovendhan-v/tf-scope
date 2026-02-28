@@ -37,7 +37,7 @@ export function SearchPage({ files, onOpenFile }: { files: TerraformFile[]; onOp
     if (!q) return <>{text}</>;
     const i = text.toLowerCase().indexOf(q.toLowerCase());
     if (i < 0) return <>{text}</>;
-    return <>{text.slice(0,i)}<mark className="bg-[rgba(0,224,144,.25)] text-[var(--tv-green)] rounded-[2px]">{text.slice(i,i+q.length)}</mark>{text.slice(i+q.length)}</>;
+    return <>{text.slice(0,i)}<mark className="bg-[rgba(0,224,144,.25)] text-[var(--tv-purple)] rounded-[2px]">{text.slice(i,i+q.length)}</mark>{text.slice(i+q.length)}</>;
   };
 
   return (
@@ -60,7 +60,7 @@ export function SearchPage({ files, onOpenFile }: { files: TerraformFile[]; onOp
               className={cn(
                 'px-3 py-1 rounded-full text-[11px] border transition-all duration-200',
                 filter === c.value
-                  ? 'bg-[rgba(0,224,144,0.1)] border-[var(--tv-green2)] text-[var(--tv-green)]'
+                  ? 'bg-[rgba(0,224,144,0.1)] border-[var(--tv-purple)] text-[var(--tv-purple)]'
                   : 'bg-[var(--tv-bg3)] border-[var(--tv-border)] text-[var(--tv-text2)] hover:border-[var(--tv-border2)]'
               )}>
               {c.label}

@@ -39,7 +39,7 @@ export function DiffPage({ files }: { files: TerraformFile[] }) {
         </div>
         {hasDiff && (
           <div className="flex gap-3 mt-4 flex-wrap">
-            <Badge variant="green">+{onlyB.length} only in {fb!.name}</Badge>
+            <Badge variant="purple">+{onlyB.length} only in {fb!.name}</Badge>
             <Badge variant="red">-{onlyA.length} only in {fa!.name}</Badge>
             <Badge variant="amber">{both.length} in both</Badge>
           </div>
@@ -89,7 +89,7 @@ function DiffPane({ title, type, items, right }: {
             <div key={i} className="flex gap-3 px-5 py-2.5 border-b border-[rgba(28,37,48,.4)] last:border-0 cursor-pointer hover:bg-[var(--tv-bg3)] transition-colors"
               style={{ background: isOnly ? (right ? 'rgba(255,107,107,.04)' : 'rgba(0,224,144,.04)') : 'rgba(245,166,35,.03)' }}>
               <div className="w-2 h-2 rounded-full flex-shrink-0 mt-1"
-                style={{ background: isOnly ? (right ? 'var(--tv-red)' : 'var(--tv-green)') : 'var(--tv-amber)' }} />
+                style={{ background: isOnly ? (right ? 'var(--tv-red)' : 'var(--tv-purple)') : 'var(--tv-amber)' }} />
               <div>
                 <div className="text-xs font-medium text-[var(--tv-text)]">{name}</div>
                 <div className="text-[10px] text-[var(--tv-text3)]">{rtype}</div>

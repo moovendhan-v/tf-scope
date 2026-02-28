@@ -39,7 +39,7 @@ export function FilesPage({ files, onOpenFile }: { files: TerraformFile[]; onOpe
               className={cn(
                 'px-3 py-1 rounded-full text-[11px] border transition-all duration-200',
                 filter === c.value
-                  ? 'bg-[rgba(0,224,144,0.1)] border-[var(--tv-green2)] text-[var(--tv-green)]'
+                  ? 'bg-[rgba(0,224,144,0.1)] border-[var(--tv-purple)] text-[var(--tv-purple)]'
                   : 'bg-[var(--tv-bg3)] border-[var(--tv-border)] text-[var(--tv-text2)] hover:border-[var(--tv-border2)]'
               )}>
               {c.label}

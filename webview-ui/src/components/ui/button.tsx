@@ -11,13 +11,13 @@ const buttonVariants = cva(
         default:
           'bg-[var(--tv-bg3)] border border-[var(--tv-border)] text-[var(--tv-text2)] hover:bg-[var(--tv-bg4)] hover:text-[var(--tv-text)] hover:border-[var(--tv-border2)]',
         primary:
-          'bg-[rgba(0,224,144,0.1)] border border-[var(--tv-green2)] text-[var(--tv-green)] hover:bg-[rgba(0,224,144,0.18)]',
+          'bg-[rgba(0,224,144,0.1)] border border-[var(--tv-purple)] text-[var(--tv-purple)] hover:bg-[rgba(0,224,144,0.18)]',
         destructive:
           'bg-[rgba(255,107,107,0.1)] border border-[rgba(255,107,107,0.4)] text-[var(--tv-red)] hover:bg-[rgba(255,107,107,0.18)]',
         ghost:
           'text-[var(--tv-text2)] hover:bg-[var(--tv-bg3)] hover:text-[var(--tv-text)]',
         link:
-          'text-[var(--tv-green)] underline-offset-4 hover:underline',
+          'text-[var(--tv-purple)] underline-offset-4 hover:underline',
       },
       size: {
         default: 'h-8 px-3 py-1.5',

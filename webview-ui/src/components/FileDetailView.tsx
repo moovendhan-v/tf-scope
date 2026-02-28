@@ -28,7 +28,7 @@ export function FileDetailView({ file, onBack }: { file: TerraformFile; onBack: 
   const changeBadge = (change?: string) => {
     if (!change) return null;
     const styles: Record<string, string> = {
-      create:  'bg-[rgba(0,224,144,0.1)] text-[var(--tv-green)] border-[rgba(0,224,144,0.3)]',
+      create:  'bg-[rgba(0,224,144,0.1)] text-[var(--tv-purple)] border-[rgba(0,224,144,0.3)]',
       update:  'bg-[rgba(245,166,35,0.12)] text-[var(--tv-amber)] border-[rgba(245,166,35,0.3)]',
       destroy: 'bg-[rgba(255,107,107,0.12)] text-[var(--tv-red)] border-[rgba(255,107,107,0.3)]',
       noop:    'bg-[var(--tv-bg5)] text-[var(--tv-text3)] border-[var(--tv-border2)]',
@@ -67,7 +67,7 @@ export function FileDetailView({ file, onBack }: { file: TerraformFile; onBack: 
       {file.isPlan && file.summary && (
         <div className="grid grid-cols-4 border-b border-[var(--tv-border)] flex-shrink-0">
           {[
-            { icon: '➕', num: file.summary.add,     label: 'Create',  color: 'var(--tv-green)' },
+            { icon: '➕', num: file.summary.add,     label: 'Create',  color: 'var(--tv-purple)' },
             { icon: '✏️', num: file.summary.change,  label: 'Modify',  color: 'var(--tv-amber)' },
             { icon: '🗑',  num: file.summary.destroy, label: 'Destroy', color: 'var(--tv-red)'   },
             { icon: '✓',  num: file.summary.noop,    label: 'No-op',   color: 'var(--tv-text2)' },
@@ -87,10 +87,10 @@ export function FileDetailView({ file, onBack }: { file: TerraformFile; onBack: 
       <div className="flex items-center gap-5 px-6 h-11 border-b border-[var(--tv-border)] bg-[var(--tv-bg2)] flex-shrink-0 overflow-x-auto text-xs">
         {[
           { dot: 'var(--tv-text2)', num: res.length, label: 'Total'    },
-          { dot: 'var(--tv-green)', num: aws,         label: 'AWS'      },
+          { dot: 'var(--tv-purple)', num: aws,         label: 'AWS'      },
           { dot: 'var(--tv-purple)',num: tf,           label: 'Terraform'},
           { dot: 'var(--tv-amber)', num: vars,         label: 'Variables'},
-          { dot: 'var(--tv-cyan)',  num: outs,         label: 'Outputs'  },
+          { dot: 'var(-tv-blue)',  num: outs,         label: 'Outputs'  },
         ].map(s => (
           <div key={s.label} className="flex items-center gap-1.5 whitespace-nowrap">
             <div className="w-1.5 h-1.5 rounded-full" style={{ background: s.dot }} />
@@ -129,7 +129,7 @@ export function FileDetailView({ file, onBack }: { file: TerraformFile; onBack: 
                       data-state={selectedRes?.id === r.id ? 'selected' : undefined}
                       onClick={() => setSelectedRes(prev => prev?.id === r.id ? null : r)}>
                       <TableCell className="text-[var(--tv-text3)] w-10">{r.id}</TableCell>
-                      <TableCell className="text-[var(--tv-green)] text-[11px]">{r.type}</TableCell>
+                      <TableCell className="text-[var(--tv-purple)] text-[11px]">{r.type}</TableCell>
                       <TableCell className="font-medium text-[var(--tv-text)]">{r.name}</TableCell>
                       <TableCell><Badge variant={r.provider === 'AWS' ? 'aws' : 'tf'}>{r.provider}</Badge></TableCell>
                       <TableCell className="text-[var(--tv-text3)] text-[11px]">{r.refs ? `🔗 ${r.refs}` : '—'}</TableCell>
@@ -178,7 +178,7 @@ function SidePanel({ resource: r, onClose }: { resource: TerraformResource; onCl
     <ScrollArea className="h-full">
       <div className="p-[16px_18px] border-b border-[var(--tv-border)] flex items-start justify-between">
         <div>
-          <div className="text-[var(--tv-green)] text-[11px] mb-0.5">{r.type}</div>
+          <div className="text-[var(--tv-purple)] text-[11px] mb-0.5">{r.type}</div>
           <div className="font-display text-[17px] font-bold text-[var(--tv-text)]">{r.name}</div>
           <div className="mt-1.5 flex gap-1.5 flex-wrap">
             <Badge variant={r.provider === 'AWS' ? 'aws' : 'tf'}>{r.provider}</Badge>
@@ -197,7 +197,7 @@ function SidePanel({ resource: r, onClose }: { resource: TerraformResource; onCl
           <div className="space-y-1.5">
             {Object.entries(r.attrs || {}).map(([k, v]) => (
               <div key={k} className="bg-[var(--tv-bg3)] border border-[var(--tv-border)] rounded-lg px-2.5 py-2">
-                <div className="text-[var(--tv-green)] text-[10px] mb-0.5">{k}</div>
+                <div className="text-[var(--tv-purple)] text-[10px] mb-0.5">{k}</div>
                 <div className="text-[var(--tv-text)] text-[11px] break-all">{v}</div>
               </div>
             ))}
@@ -215,7 +215,7 @@ function SidePanel({ resource: r, onClose }: { resource: TerraformResource; onCl
           <div className="space-y-1.5">
             {(r.deps || []).map((d, i) => (
               <div key={i} className="flex items-center gap-2 px-2.5 py-1.5 bg-[var(--tv-bg3)] border border-[var(--tv-border)] rounded-lg text-[11px]">
-                <span className="text-[var(--tv-green)]">◉</span>
+                <span className="text-[var(--tv-purple)]">◉</span>
                 <span className="text-[var(--tv-text3)]">→</span>
                 <span className="text-[var(--tv-text)]">{d}</span>
               </div>
@@ -228,7 +228,7 @@ function SidePanel({ resource: r, onClose }: { resource: TerraformResource; onCl
         <div className="p-[14px_18px]">
           <div className="text-[9px] uppercase tracking-[1.2px] text-[var(--tv-text3)] mb-2.5">💰 Cost Estimate</div>
           <div className="bg-[var(--tv-bg3)] border border-[var(--tv-border)] rounded-lg px-2.5 py-2 mb-1.5">
-            <div className="text-[var(--tv-green)] text-[10px] mb-0.5">Monthly estimate</div>
+            <div className="text-[var(--tv-purple)] text-[10px] mb-0.5">Monthly estimate</div>
             <div className="text-[var(--tv-amber)] text-[14px] font-bold">
               ${costInfo.base.toFixed(2)}{' '}
               <span className="text-[10px] text-[var(--tv-text2)]">/{costInfo.unit}</span>
@@ -390,7 +390,7 @@ function GraphView({ file, selectedRes, onSelect }: {
       {/* Legend */}
       <div className="absolute bottom-4 left-4 bg-[var(--tv-bg2)] border border-[var(--tv-border)] rounded-[10px] p-3">
         <div className="text-[9px] uppercase tracking-[1.2px] text-[var(--tv-text3)] mb-2">Legend</div>
-        {[['var(--tv-green)','AWS Resource'],['var(--tv-purple)','Terraform Block'],['var(--tv-amber)','Modified'],['var(--tv-red)','Destroyed']].map(([c,l])=>(
+        {[['var(--tv-purple)','AWS Resource'],['var(--tv-purple)','Terraform Block'],['var(--tv-amber)','Modified'],['var(--tv-red)','Destroyed']].map(([c,l])=>(
           <div key={l} className="flex items-center gap-2 text-[10px] text-[var(--tv-text2)] mb-1.5">
             <div className="w-2 h-2 rounded-full" style={{background:c}} />{l}
           </div>
@@ -438,7 +438,7 @@ function CostView({ file }: { file: TerraformFile }) {
       <div className="grid grid-cols-3 gap-3.5 mb-5">
         {[
           { num:`$${total.toFixed(2)}`,       label:'Monthly Estimate', color:'var(--tv-amber)' },
-          { num:`$${(total*12).toFixed(2)}`,   label:'Annual Estimate',  color:'var(--tv-green)' },
+          { num:`$${(total*12).toFixed(2)}`,   label:'Annual Estimate',  color:'var(--tv-purple)' },
           { num:String(billable.length),        label:'Billable Resources',color:'var(--tv-text)'  },
         ].map(s => (
           <div key={s.label} className="rounded-[14px] border border-[var(--tv-border)] bg-[var(--tv-bg2)] p-4">
@@ -458,7 +458,7 @@ function CostView({ file }: { file: TerraformFile }) {
           <TableBody>
             {costed.map((r,i)=>(
               <TableRow key={i} className="cursor-default">
-                <TableCell className="text-[var(--tv-green)] text-[11px]">{r.type}</TableCell>
+                <TableCell className="text-[var(--tv-purple)] text-[11px]">{r.type}</TableCell>
                 <TableCell className="font-medium text-[var(--tv-text)]">{r.name}</TableCell>
                 <TableCell style={{color:r.monthlyEst>0?'var(--tv-amber)':'var(--tv-text3)'}}>
                   ${r.monthlyEst.toFixed(3)}
@@ -466,7 +466,7 @@ function CostView({ file }: { file: TerraformFile }) {
                 <TableCell>
                   <div className="h-1 rounded-sm" style={{
                     width:Math.max(4,(r.monthlyEst/maxCost)*100),
-                    background:r.monthlyEst>20?'var(--tv-red)':r.monthlyEst>5?'var(--tv-amber)':'var(--tv-green)'
+                    background:r.monthlyEst>20?'var(--tv-red)':r.monthlyEst>5?'var(--tv-amber)':'var(--tv-purple)'
                   }}/>
                 </TableCell>
                 <TableCell className="text-[11px] text-[var(--tv-text3)]">{r.note}</TableCell>

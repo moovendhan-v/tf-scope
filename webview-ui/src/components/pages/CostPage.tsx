@@ -36,7 +36,7 @@ export function CostPage({ files }: { files: TerraformFile[] }) {
         </div>
         <div className="grid grid-cols-3 gap-3.5">
           <CostCard num={`$${total.toFixed(2)}`}  label="Est. Monthly Total"   color="var(--tv-amber)" />
-          <CostCard num={`$${(total*12).toFixed(2)}`} label="Est. Annual Total" color="var(--tv-green)" />
+          <CostCard num={`$${(total*12).toFixed(2)}`} label="Est. Annual Total" color="var(--tv-purple)" />
           <CostCard num={String(billable.length)}  label="Billable Resources"   color="var(--tv-text)"  />
         </div>
       </div>
@@ -52,7 +52,7 @@ export function CostPage({ files }: { files: TerraformFile[] }) {
             <TableBody>
               {costed.map((r, i) => (
                 <TableRow key={i} className="cursor-default">
-                  <TableCell className="text-[var(--tv-green)] text-[11px]">{r.type}</TableCell>
+                  <TableCell className="text-[var(--tv-purple)] text-[11px]">{r.type}</TableCell>
                   <TableCell className="font-medium text-[var(--tv-text)]">{r.name}</TableCell>
                   <TableCell style={{ color: r.monthlyEst > 0 ? 'var(--tv-amber)' : 'var(--tv-text3)' }}>
                     ${r.monthlyEst.toFixed(3)}
@@ -60,7 +60,7 @@ export function CostPage({ files }: { files: TerraformFile[] }) {
                   <TableCell>
                     <div className="h-1 rounded-sm" style={{
                       width: Math.max(4, (r.monthlyEst / maxCost) * 120),
-                      background: r.monthlyEst > 20 ? 'var(--tv-red)' : r.monthlyEst > 5 ? 'var(--tv-amber)' : 'var(--tv-green)',
+                      background: r.monthlyEst > 20 ? 'var(--tv-red)' : r.monthlyEst > 5 ? 'var(--tv-amber)' : 'var(--tv-purple)',
                     }} />
                   </TableCell>
                   <TableCell className="text-[11px] text-[var(--tv-text3)]">{r.note}</TableCell>
