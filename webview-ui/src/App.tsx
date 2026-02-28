@@ -13,17 +13,18 @@ import './index.css';
 
 declare global {
   interface Window {
-    __TFSCOPE_FILES__: TerraformFile[];
-    __TFSCOPE_CURRENT_FILE__: TerraformFile | undefined;
-    __TFSCOPE_VIEW__: 'dashboard' | 'fileDetail';
+    __tf_scope_FILES__: TerraformFile[];
+    __tf_scope_CURRENT_FILE__: TerraformFile | undefined;
+    __tf_scope_VIEW__: 'dashboard' | 'fileDetail';
+    __tf_scope_ERROR__?: string;
     __vscode__: any;
   }
 }
 
 export default function App() {
-  const initialFiles: TerraformFile[] = window.__TFSCOPE_FILES__ || [];
-  const initialView = window.__TFSCOPE_VIEW__ || 'dashboard';
-  const currentFileFromExt = window.__TFSCOPE_CURRENT_FILE__;
+  const initialFiles: TerraformFile[] = window.__tf_scope_FILES__ || [];
+  const initialView = window.__tf_scope_VIEW__ || 'dashboard';
+  const currentFileFromExt = window.__tf_scope_CURRENT_FILE__;
 
   const [files] = useState<TerraformFile[]>(initialFiles);
   const [page, setPage] = useState<Page>(

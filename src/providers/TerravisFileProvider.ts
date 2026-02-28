@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { TerraformScanner, TerraformFile } from '../parsers/TerraformScanner';
 
-export class TFScopeFileItem extends vscode.TreeItem {
+export class TfScopeFileItem extends vscode.TreeItem {
   constructor(
     public readonly label: string,
     public readonly collapsibleState: vscode.TreeItemCollapsibleState,
@@ -15,7 +15,7 @@ export class TFScopeFileItem extends vscode.TreeItem {
     if (itemType === 'file' && tfFile) {
       this.description = `${tfFile.resources.length} resources`;
       this.tooltip = tfFile.filePath;
-      this.contextValue = 'TFScopeFile';
+      this.contextValue = 'terravisFile';
       this.resourceUri = vscode.Uri.file(tfFile.filePath);
 
       const iconMap: Record<string, string> = {
@@ -30,18 +30,18 @@ export class TFScopeFileItem extends vscode.TreeItem {
 
       this.command = {
         command: 'tf-scope.openFile',
-        title: 'Open in TFScope',
+        title: 'Open in TerraVis',
         arguments: [tfFile.filePath],
       };
     } else if (itemType === 'group') {
       this.iconPath = new vscode.ThemeIcon('folder');
-      this.contextValue = 'TFScopeGroup';
+      this.contextValue = 'terravisGroup';
     }
   }
 }
 
-export class TFScopeFileProvider implements vscode.TreeDataProvider<TFScopeFileItem> {
-  private _onDidChangeTreeData = new vscode.EventEmitter<TFScopeFileItem | undefined | void>();
+export class TfScopeFileProvider implements vscode.TreeDataProvider<TfScopeFileItem> {
+  private _onDidChangeTreeData = new vscode.EventEmitter<TfScopeFileItem | undefined | void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
   constructor(private scanner: TerraformScanner) { }
@@ -50,11 +50,11 @@ export class TFScopeFileProvider implements vscode.TreeDataProvider<TFScopeFileI
     this._onDidChangeTreeData.fire();
   }
 
-  getTreeItem(element: TFScopeFileItem): vscode.TreeItem {
+  getTreeItem(element: TfScopeFileItem): vscode.TreeItem {
     return element;
   }
 
-  getChildren(element?: TFScopeFileItem): vscode.ProviderResult<TFScopeFileItem[]> {
+  getChildren(element?: TfScopeFileItem): vscode.ProviderResult<TfScopeFileItem[]> {
     if (!element) {
       return this.getRootItems();
     }
@@ -64,10 +64,10 @@ export class TFScopeFileProvider implements vscode.TreeDataProvider<TFScopeFileI
     return [];
   }
 
-  private getRootItems(): TFScopeFileItem[] {
+  private getRootItems(): TfScopeFileItem[] {
     const files = this.scanner.getFiles();
     if (files.length === 0) {
-      const empty = new TFScopeFileItem(
+      const empty = new TfScopeFileItem(
         'No Terraform files found',
         vscode.TreeItemCollapsibleState.None,
         undefined,
@@ -87,12 +87,12 @@ export class TFScopeFileProvider implements vscode.TreeDataProvider<TFScopeFileI
       { label: `📋 Plan Files`, type: 'plan' },
     ];
 
-    const items: TFScopeFileItem[] = [];
+    const items: TfScopeFileItem[] = [];
 
     for (const group of groups) {
       const groupFiles = files.filter(f => f.type === group.type);
       if (groupFiles.length > 0) {
-        const item = new TFScopeFileItem(
+        const item = new TfScopeFileItem(
           group.label,
           vscode.TreeItemCollapsibleState.Expanded,
           undefined,
@@ -106,7 +106,7 @@ export class TFScopeFileProvider implements vscode.TreeDataProvider<TFScopeFileI
     return items;
   }
 
-  private getGroupFiles(groupLabel: string): TFScopeFileItem[] {
+  private getGroupFiles(groupLabel: string): TfScopeFileItem[] {
     const files = this.scanner.getFiles();
     let filtered: TerraformFile[];
 
@@ -121,7 +121,7 @@ export class TFScopeFileProvider implements vscode.TreeDataProvider<TFScopeFileI
     }
 
     return filtered.map(f => {
-      const item = new TFScopeFileItem(
+      const item = new TfScopeFileItem(
         f.name,
         vscode.TreeItemCollapsibleState.None,
         f.filePath,

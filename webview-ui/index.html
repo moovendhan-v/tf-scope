@@ -1,58 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TerraVis</title>
-    <script>
-      // Simulate VS Code data for browser dev
-      window.__TERRAVIS_FILES__ = [
-        {
-          id: 'f1', name: 'main.tf', filePath: '/workspace/main.tf',
-          type: 'tf', ts: new Date().toISOString(), providers: ['AWS', 'TF'],
-          size: 4096,
-          resources: [
-            { id: 1, type: 'aws_vpc', name: 'main', provider: 'AWS', refs: 0, attrs: { cidr_block: '10.0.0.0/16', enable_dns_hostnames: 'true' }, deps: [] },
-            { id: 2, type: 'aws_subnet', name: 'public', provider: 'AWS', refs: 1, attrs: { vpc_id: 'aws_vpc.main.id', cidr_block: '10.0.1.0/24' }, deps: ['aws_vpc.main'] },
-            { id: 3, type: 'aws_internet_gateway', name: 'igw', provider: 'AWS', refs: 1, attrs: { vpc_id: 'aws_vpc.main.id' }, deps: ['aws_vpc.main'] },
-            { id: 4, type: 'aws_security_group', name: 'web', provider: 'AWS', refs: 1, attrs: { name: 'web-sg', vpc_id: 'aws_vpc.main.id' }, deps: ['aws_vpc.main'] },
-            { id: 5, type: 'aws_instance', name: 'web', provider: 'AWS', refs: 2, attrs: { ami: 'ami-0c55b159cbfafe1f0', instance_type: 'var.instance_type' }, deps: ['aws_subnet.public', 'aws_security_group.web'] },
-            { id: 6, type: 'aws_s3_bucket', name: 'logs', provider: 'AWS', refs: 0, attrs: { bucket: 'my-logs-bucket' }, deps: [] },
-            { id: 7, type: 'aws_lb', name: 'main', provider: 'AWS', refs: 1, attrs: { name: 'main-alb', load_balancer_type: 'application' }, deps: ['aws_subnet.public'] },
-            { id: 8, type: 'variable', name: 'environment', provider: 'TERRAFORM', refs: 0, attrs: { type: 'string', default: 'production' }, deps: [] },
-            { id: 9, type: 'variable', name: 'instance_type', provider: 'TERRAFORM', refs: 1, attrs: { type: 'string', default: 't3.micro' }, deps: [] },
-            { id: 10, type: 'output', name: 'instance_ip', provider: 'TERRAFORM', refs: 1, attrs: { value: 'aws_instance.web.public_ip' }, deps: ['aws_instance.web'] },
-          ]
-        },
-        {
-          id: 'f2', name: 'prod.tfstate', filePath: '/workspace/prod.tfstate',
-          type: 'tfstate', ts: new Date(Date.now() - 30*60*1000).toISOString(), providers: ['AWS'],
-          size: 8192,
-          resources: [
-            { id: 1, type: 'aws_vpc', name: 'main', provider: 'AWS', refs: 0, attrs: { id: 'vpc-0a1b2c3d4e', cidr_block: '10.0.0.0/16', state: 'available' }, deps: [] },
-            { id: 2, type: 'aws_instance', name: 'web', provider: 'AWS', refs: 1, attrs: { id: 'i-0a1b2c3d4e5f', instance_type: 't3.micro', state: 'running' }, deps: [] },
-          ]
-        },
-        {
-          id: 'f3', name: 'plan.json', filePath: '/workspace/plan.json',
-          type: 'plan', ts: new Date(Date.now() - 5*60*1000).toISOString(), providers: ['AWS'],
-          size: 2048, isPlan: true,
-          summary: { add: 2, change: 1, destroy: 1, noop: 1 },
-          resources: [
-            { id: 1, type: 'aws_vpc', name: 'main', provider: 'AWS', refs: 0, change: 'noop', attrs: {}, deps: [] },
-            { id: 2, type: 'aws_subnet', name: 'public-b', provider: 'AWS', refs: 1, change: 'create', attrs: { cidr_block: '10.0.2.0/24' }, deps: ['aws_vpc.main'] },
-            { id: 3, type: 'aws_instance', name: 'web', provider: 'AWS', refs: 1, change: 'update', attrs: { instance_type: 't3.small' }, deps: [] },
-            { id: 4, type: 'aws_security_group', name: 'old-sg', provider: 'AWS', refs: 0, change: 'destroy', attrs: {}, deps: [] },
-            { id: 5, type: 'aws_nat_gateway', name: 'ngw', provider: 'AWS', refs: 1, change: 'create', attrs: {}, deps: [] },
-          ]
-        }
-      ];
-      window.__TERRAVIS_VIEW__ = 'dashboard';
-      window.__vscode__ = null;
-    </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>tf-scope</title>
+  <script>
+    // Simulate VS Code data for browser dev
+    window.__tf - scope_FILES__ =[
+      {
+        id: 'f1', name: 'main.tf', filePath: '/workspace/main.tf',
+        type: 'tf', ts: new Date().toISOString(), providers: ['AWS', 'TF'],
+        size: 4096,
+        resources: [
+          { id: 1, type: 'aws_vpc', name: 'main', provider: 'AWS', refs: 0, attrs: { cidr_block: '10.0.0.0/16', enable_dns_hostnames: 'true' }, deps: [] },
+          { id: 2, type: 'aws_subnet', name: 'public', provider: 'AWS', refs: 1, attrs: { vpc_id: 'aws_vpc.main.id', cidr_block: '10.0.1.0/24' }, deps: ['aws_vpc.main'] },
+          { id: 3, type: 'aws_internet_gateway', name: 'igw', provider: 'AWS', refs: 1, attrs: { vpc_id: 'aws_vpc.main.id' }, deps: ['aws_vpc.main'] },
+          { id: 4, type: 'aws_security_group', name: 'web', provider: 'AWS', refs: 1, attrs: { name: 'web-sg', vpc_id: 'aws_vpc.main.id' }, deps: ['aws_vpc.main'] },
+          { id: 5, type: 'aws_instance', name: 'web', provider: 'AWS', refs: 2, attrs: { ami: 'ami-0c55b159cbfafe1f0', instance_type: 'var.instance_type' }, deps: ['aws_subnet.public', 'aws_security_group.web'] },
+          { id: 6, type: 'aws_s3_bucket', name: 'logs', provider: 'AWS', refs: 0, attrs: { bucket: 'my-logs-bucket' }, deps: [] },
+          { id: 7, type: 'aws_lb', name: 'main', provider: 'AWS', refs: 1, attrs: { name: 'main-alb', load_balancer_type: 'application' }, deps: ['aws_subnet.public'] },
+          { id: 8, type: 'variable', name: 'environment', provider: 'TERRAFORM', refs: 0, attrs: { type: 'string', default: 'production' }, deps: [] },
+          { id: 9, type: 'variable', name: 'instance_type', provider: 'TERRAFORM', refs: 1, attrs: { type: 'string', default: 't3.micro' }, deps: [] },
+          { id: 10, type: 'output', name: 'instance_ip', provider: 'TERRAFORM', refs: 1, attrs: { value: 'aws_instance.web.public_ip' }, deps: ['aws_instance.web'] },
+        ]
+      },
+      {
+        id: 'f2', name: 'prod.tfstate', filePath: '/workspace/prod.tfstate',
+        type: 'tfstate', ts: new Date(Date.now() - 30 * 60 * 1000).toISOString(), providers: ['AWS'],
+        size: 8192,
+        resources: [
+          { id: 1, type: 'aws_vpc', name: 'main', provider: 'AWS', refs: 0, attrs: { id: 'vpc-0a1b2c3d4e', cidr_block: '10.0.0.0/16', state: 'available' }, deps: [] },
+          { id: 2, type: 'aws_instance', name: 'web', provider: 'AWS', refs: 1, attrs: { id: 'i-0a1b2c3d4e5f', instance_type: 't3.micro', state: 'running' }, deps: [] },
+        ]
+      },
+      {
+        id: 'f3', name: 'plan.json', filePath: '/workspace/plan.json',
+        type: 'plan', ts: new Date(Date.now() - 5 * 60 * 1000).toISOString(), providers: ['AWS'],
+        size: 2048, isPlan: true,
+        summary: { add: 2, change: 1, destroy: 1, noop: 1 },
+        resources: [
+          { id: 1, type: 'aws_vpc', name: 'main', provider: 'AWS', refs: 0, change: 'noop', attrs: {}, deps: [] },
+          { id: 2, type: 'aws_subnet', name: 'public-b', provider: 'AWS', refs: 1, change: 'create', attrs: { cidr_block: '10.0.2.0/24' }, deps: ['aws_vpc.main'] },
+          { id: 3, type: 'aws_instance', name: 'web', provider: 'AWS', refs: 1, change: 'update', attrs: { instance_type: 't3.small' }, deps: [] },
+          { id: 4, type: 'aws_security_group', name: 'old-sg', provider: 'AWS', refs: 0, change: 'destroy', attrs: {}, deps: [] },
+          { id: 5, type: 'aws_nat_gateway', name: 'ngw', provider: 'AWS', refs: 1, change: 'create', attrs: {}, deps: [] },
+        ]
+      }
+    ];
+    window.__tf - scope_VIEW__ = 'dashboard';
+    window.__vscode__ = null;
+  </script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>

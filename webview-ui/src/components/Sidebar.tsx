@@ -46,7 +46,7 @@ export function Sidebar({ currentPage, onNavigate, expanded, onToggle, fileCount
           </button>
           {expanded && (
             <span className="font-display font-extrabold text-[16px] whitespace-nowrap text-[var(--tv-text)] animate-fade-in">
-              TerraVis
+              tf-scope
             </span>
           )}
         </div>
@@ -98,7 +98,7 @@ export function Sidebar({ currentPage, onNavigate, expanded, onToggle, fileCount
             {expanded && (
               <div className="animate-fade-in">
                 <div className="text-[11px] font-medium text-[var(--tv-text)]">Workspace</div>
-                <div className="text-[9px] text-[var(--tv-green)]">TerraVis MVP</div>
+                <div className="text-[9px] text-[var(--tv-green)]">tf-scope MVP</div>
               </div>
             )}
           </div>

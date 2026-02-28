@@ -1,17 +1,17 @@
 import * as vscode from 'vscode';
-import { TFScopeFileProvider } from './providers/TFScopeFileProvider';
+import { TfScopeFileProvider } from './providers/TerravisFileProvider';
 import { DashboardPanel } from './panels/DashboardPanel';
 import { FileDetailPanel } from './panels/FileDetailPanel';
 import { TerraformScanner } from './parsers/TerraformScanner';
 
-let fileProvider: TFScopeFileProvider;
+let fileProvider: TfScopeFileProvider;
 let scanner: TerraformScanner;
 
 export function activate(context: vscode.ExtensionContext) {
-  console.log('TFScope is now active');
+  console.log('TerraVis is now active');
 
   scanner = new TerraformScanner();
-  fileProvider = new TFScopeFileProvider(scanner);
+  fileProvider = new TfScopeFileProvider(scanner);
 
   // Register tree view
   const treeView = vscode.window.createTreeView('tf-scope.fileExplorer', {
@@ -31,7 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
       await scanner.scan();
       fileProvider.refresh();
       DashboardPanel.refresh();
-      vscode.window.showInformationMessage(`TFScope: Found ${scanner.getFiles().length} Terraform files`);
+      vscode.window.showInformationMessage(`TerraVis: Found ${scanner.getFiles().length} Terraform files`);
     }),
 
     vscode.commands.registerCommand('tf-scope.openFile', async (filePathOrItem: any) => {
@@ -53,14 +53,14 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('tf-scope.scanWorkspace', async () => {
       await vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
-        title: 'TFScope: Scanning workspace...',
+        title: 'TerraVis: Scanning workspace...',
         cancellable: false,
       }, async () => {
         await scanner.scan();
         fileProvider.refresh();
         DashboardPanel.refresh();
       });
-      vscode.window.showInformationMessage(`TFScope: Scan complete — ${scanner.getFiles().length} files found`);
+      vscode.window.showInformationMessage(`TerraVis: Scan complete — ${scanner.getFiles().length} files found`);
     })
   );
 

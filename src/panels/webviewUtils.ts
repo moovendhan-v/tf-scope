@@ -24,7 +24,7 @@ export function getNonce(): string {
 // those all live here (or better, in the built index.css from Vite/Tailwind).
 //
 // The `bootstrapScript` parameter is a plain JS string that will be injected
-// before the React bundle, e.g. to set window.__TERRAVIS_FILES__ etc.
+// before the React bundle, e.g. to set window.__tf_scope_FILES__ etc.
 //
 export function getHtmlShell(
   webview: vscode.Webview,
@@ -81,7 +81,7 @@ export function getHtmlShell(
   <!--
     index.css is the Vite/Tailwind build output.
     It contains all shadcn CSS variables, Tailwind utilities,
-    and the TerraVis token definitions.
+    and the tf-scope token definitions.
     DO NOT duplicate any of that here.
   -->
   <link rel="stylesheet" href="${styleUri}" />
@@ -102,3 +102,4 @@ ${bootstrapScript}
 </body>
 </html>`;
 }
+

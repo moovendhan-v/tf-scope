@@ -10,7 +10,7 @@ import { cn } from '@/lib/utils';
 import type { TerraformFile, Page } from '../../types';
 
 const ACTIVITIES = [
-  { color: 'var(--tv-green)',  msg: 'TerraVis scanned workspace files',        time: 'just now' },
+  { color: 'var(--tv-green)',  msg: 'tf-scope scanned workspace files',        time: 'just now' },
   { color: 'var(--tv-blue)',   msg: 'Detected .tf, .tfstate and plan files',   time: '1m ago'   },
   { color: 'var(--tv-amber)',  msg: 'Cost estimates calculated',                time: '1m ago'   },
   { color: 'var(--tv-purple)', msg: 'Dependency graph built',                  time: '1m ago'   },

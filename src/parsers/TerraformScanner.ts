@@ -83,7 +83,7 @@ export class TerraformScanner {
         this.files.set(filePath, parsed);
       }
     } catch (err) {
-      console.error(`TFScope: Failed to parse ${filePath}:`, err);
+      console.error(`tf-scope: Failed to parse ${filePath}:`, err);
     }
   }
 
