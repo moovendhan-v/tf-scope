@@ -1,0 +1,120 @@
+{
+  "name": "tf-scope",
+  "displayName": "TFScope — Terraform Infrastructure Visualizer",
+  "description": "Scan, visualize and analyze Terraform .tf, .tfstate, and plan files with a rich UI",
+  "version": "0.1.0",
+  "publisher": "TFScope",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Visualization"
+  ],
+  "keywords": [
+    "terraform",
+    "infrastructure",
+    "aws",
+    "iac",
+    "tfstate"
+  ],
+  "activationEvents": [
+    "workspaceContains:**/*.tf",
+    "workspaceContains:**/*.tfstate",
+    "workspaceContains:**/*.tfplan"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "tf-scope",
+          "title": "TFScope",
+          "icon": "media/TFScope.svg"
+        }
+      ]
+    },
+    "views": {
+      "tf-scope": [
+        {
+          "icon": "icons",
+          "id": "tf-scope.fileExplorer",
+          "name": "Terraform Files",
+          "type": "tree"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "tf-scope.openDashboard",
+        "title": "TFScope: Open Dashboard",
+        "icon": "$(layout-panel)"
+      },
+      {
+        "command": "tf-scope.refreshFiles",
+        "title": "TFScope: Refresh Files",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "tf-scope.openFile",
+        "title": "TFScope: Visualize File"
+      },
+      {
+        "command": "tf-scope.scanWorkspace",
+        "title": "TFScope: Scan Workspace"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "tf-scope.refreshFiles",
+          "when": "view == tf-scope.fileExplorer",
+          "group": "navigation"
+        },
+        {
+          "command": "tf-scope.openDashboard",
+          "when": "view == tf-scope.fileExplorer",
+          "group": "navigation"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "tf-scope.openFile",
+          "when": "resourceExtname =~ /\\.(tf|tfstate|json)$/",
+          "group": "TFScope"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "TFScope",
+      "properties": {
+        "tf-scope.autoScan": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically scan workspace for Terraform files on startup"
+        },
+        "tf-scope.includePlanFiles": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include .tfplan and plan.json files in scan"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build:ext && npm run build:webview",
+    "build:ext": "esbuild src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node",
+    "build:webview": "cd webview-ui && npm run build",
+    "watch:ext": "esbuild src/extension.ts --bundle --outfile=out/extension.js --external:vscode --format=cjs --platform=node --watch",
+    "watch:webview": "cd webview-ui && npm run dev",
+    "compile": "tsc -p ./",
+    "lint": "eslint src --ext ts"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.3.0",
+    "esbuild": "^0.20.0",
+    "@vscode/test-electron": "^2.3.0"
+  }
+}

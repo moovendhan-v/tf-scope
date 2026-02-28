@@ -1,0 +1,50 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build Extension",
+      "type": "shell",
+      "command": "npm run build:ext",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": "$esbuild-watch"
+    },
+    {
+      "label": "Build Webview UI",
+      "type": "shell",
+      "command": "cd webview-ui && npm run build",
+      "group": "build",
+      "presentation": {
+        "reveal": "silent"
+      }
+    },
+    {
+      "label": "Build All",
+      "dependsOn": ["Build Extension", "Build Webview UI"],
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      "label": "Watch Extension",
+      "type": "shell",
+      "command": "npm run watch:ext",
+      "isBackground": true,
+      "group": "build",
+      "problemMatcher": "$esbuild-watch"
+    },
+    {
+      "label": "Watch Webview",
+      "type": "shell",
+      "command": "cd webview-ui && npm run dev",
+      "isBackground": true,
+      "group": "build"
+    }
+  ]
+}

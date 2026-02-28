@@ -1,0 +1,225 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+version: '3'
+
+# ─────────────────────────────────────────────────────────────
+#  TFScope VS Code Extension — Taskfile
+#  https://taskfile.dev
+#
+#  Usage:
+#    task install      — Install all dependencies
+#    task build        — Build extension + webview
+#    task dev          — Watch both in parallel (hot reload)
+#    task run          — Build + launch VS Code with extension
+#    task package      — Package as .vsix file
+#    task clean        — Remove all build artifacts
+# ─────────────────────────────────────────────────────────────
+
+vars:
+  EXT_OUT:    out/extension.js
+  WUI_OUT:    webview-ui/dist/assets/index.js
+  VSIX_NAME:  TFScope-{{.VERSION}}.vsix
+  VERSION:
+    sh: node -p "require('./package.json').version" 2>/dev/null || echo "0.1.0"
+
+env:
+  NODE_ENV: development
+
+tasks:
+
+  # ── DEFAULT ────────────────────────────────────────────────
+  default:
+    desc: Show available tasks
+    cmds:
+      - task --list
+
+  # ── INSTALL ────────────────────────────────────────────────
+  install:
+    desc: Install all dependencies (extension + webview-ui)
+    cmds:
+      - task: install:ext
+      - task: install:ui
+    sources:
+      - package.json
+      - webview-ui/package.json
+
+  install:ext:
+    desc: Install extension dependencies
+    cmds:
+      - npm install
+    sources:
+      - package.json
+    generates:
+      - node_modules/.package-lock.json
+
+  install:ui:
+    desc: Install webview-ui dependencies
+    dir: webview-ui
+    cmds:
+      - npm install
+    sources:
+      - package.json
+    generates:
+      - node_modules/.package-lock.json
+
+  # ── BUILD ──────────────────────────────────────────────────
+  build:
+    desc: Build everything (extension backend + React webview)
+    deps: [build:ext, build:ui]
+
+  build:ext:
+    desc: Bundle the extension TypeScript with esbuild
+    cmds:
+      - |
+        npx esbuild src/extension.ts \
+          --bundle \
+          --outfile={{.EXT_OUT}} \
+          --external:vscode \
+          --format=cjs \
+          --platform=node \
+          --sourcemap
+    sources:
+      - src/**/*.ts
+    generates:
+      - "{{.EXT_OUT}}"
+
+  build:ui:
+    desc: Build the React webview UI with Vite
+    dir: webview-ui
+    cmds:
+      - npm run build
+    sources:
+      - src/**/*.{ts,tsx,css}
+      - index.html
+      - vite.config.ts
+      - tailwind.config.ts
+    generates:
+      - dist/assets/index.js
+
+  # ── DEV / WATCH ────────────────────────────────────────────
+  dev:
+    desc: Watch both extension and webview UI in parallel (hot reload)
+    deps: [install]
+    cmds:
+      - echo "🚀 Starting TFScope dev mode..."
+      - echo "   Press F5 in VS Code to launch Extension Host"
+      - task: dev:parallel
+
+  dev:parallel:
+    desc: Run extension watcher and Vite dev server concurrently
+    deps: [dev:ext, dev:ui]
+
+  dev:ext:
+    desc: Watch extension source with esbuild
+    cmds:
+      - |
+        npx esbuild src/extension.ts \
+          --bundle \
+          --outfile={{.EXT_OUT}} \
+          --external:vscode \
+          --format=cjs \
+          --platform=node \
+          --sourcemap \
+          --watch
+
+  dev:ui:
+    desc: Vite dev server for webview UI
+    dir: webview-ui
+    cmds:
+      - npm run dev
+
+  # ── RUN (launch in VS Code) ─────────────────────────────────
+  run:
+    desc: Build then launch VS Code Extension Development Host
+    deps: [build]
+    cmds:
+      - task: launch
+
+  launch:
+    desc: Launch VS Code with extension loaded (requires VS Code CLI)
+    cmds:
+      - |
+        if command -v code &> /dev/null; then
+          echo "🎯 Launching VS Code Extension Development Host..."
+          code --extensionDevelopmentPath="$(pwd)" .
+        elif command -v code-insiders &> /dev/null; then
+          echo "🎯 Launching VS Code Insiders Extension Development Host..."
+          code-insiders --extensionDevelopmentPath="$(pwd)" .
+        else
+          echo "⚠️  VS Code CLI not found."
+          echo "    Please open this folder in VS Code and press F5 to run the extension."
+          echo "    Alternatively, add 'code' to your PATH."
+          echo ""
+          echo "    Built extension is at: {{.EXT_OUT}}"
+          echo "    Built webview is at:   {{.WUI_OUT}}"
+        fi
+
+  # ── PACKAGE ────────────────────────────────────────────────
+  package:
+    desc: Package the extension as a .vsix file for distribution
+    deps: [build]
+    cmds:
+      - |
+        if ! command -v vsce &> /dev/null; then
+          echo "📦 Installing @vscode/vsce..."
+          npm install -g @vscode/vsce
+        fi
+      - vsce package --out {{.VSIX_NAME}}
+      # - echo "✅ Packaged: {{.VSIX_NAME}}"
+
+  install-vsix:
+    desc: Install the packaged .vsix into VS Code
+    deps: [package]
+    cmds:
+      - code --install-extension {{.VSIX_NAME}}
+      - echo "✅ Extension installed. Reload VS Code to use it."
+
+  # ── LINT / TYPE CHECK ──────────────────────────────────────
+  lint:
+    desc: Run ESLint on extension source
+    cmds:
+      - npx tsc --noEmit -p tsconfig.json
+
+  lint:ui:
+    desc: Type-check the webview React app
+    dir: webview-ui
+    cmds:
+      - npx tsc --noEmit
+
+  check:
+    desc: Type-check everything
+    deps: [lint, lint:ui]
+
+  # ── CLEAN ──────────────────────────────────────────────────
+  clean:
+    desc: Remove all build artifacts
+    cmds:
+      - rm -rf out/
+      - rm -rf webview-ui/dist/
+      - echo "🧹 Cleaned build artifacts"
+
+  clean:all:
+    desc: Remove all build artifacts AND node_modules
+    deps: [clean]
+    cmds:
+      - rm -rf node_modules/
+      - rm -rf webview-ui/node_modules/
+      - echo "🧹 Cleaned everything including node_modules"
+
+  # ── UTILS ──────────────────────────────────────────────────
+  info:
+    desc: Show project info
+    cmds:
+      - echo "TFScope VS Code Extension"
+      - echo "Version  — {{.VERSION}}"
+      - echo "Node     — $(node --version)"
+      - echo "npm      — $(npm --version)"
+      - |
+        if command -v code &> /dev/null; then
+          echo "VS Code  — $(code --version | head -1)"
+        else
+          echo "VS Code  — not found in PATH"
+        fi
+      - echo ""
+      - echo "Build targets:"
+      - echo "  Extension → {{.EXT_OUT}}"
+      - echo "  Webview   → {{.WUI_OUT}}"

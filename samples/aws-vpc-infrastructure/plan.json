@@ -1,0 +1,73 @@
+{
+    "format_version": "1.1",
+    "terraform_version": "1.5.0",
+    "planned_values": {
+        "root_module": {
+            "resources": [
+                {
+                    "address": "aws_s3_bucket.new_storage",
+                    "mode": "managed",
+                    "type": "aws_s3_bucket",
+                    "name": "new_storage",
+                    "provider_name": "registry.terraform.io/hashicorp/aws",
+                    "schema_version": 0,
+                    "values": {
+                        "bucket": "TFScope-planned-bucket",
+                        "tags": {
+                            "Environment": "Dev"
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "resource_changes": [
+        {
+            "address": "aws_s3_bucket.new_storage",
+            "mode": "managed",
+            "type": "aws_s3_bucket",
+            "name": "new_storage",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "create"
+                ],
+                "after": {
+                    "bucket": "TFScope-planned-bucket",
+                    "tags": {
+                        "Environment": "Dev"
+                    }
+                }
+            }
+        },
+        {
+            "address": "aws_instance.web_server",
+            "mode": "managed",
+            "type": "aws_instance",
+            "name": "web_server",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "update"
+                ],
+                "after": {
+                    "tags": {
+                        "Name": "Updated-TFScope-Server"
+                    }
+                }
+            }
+        },
+        {
+            "address": "aws_subnet.old_subnet",
+            "mode": "managed",
+            "type": "aws_subnet",
+            "name": "old_subnet",
+            "provider_name": "registry.terraform.io/hashicorp/aws",
+            "change": {
+                "actions": [
+                    "delete"
+                ]
+            }
+        }
+    ]
+}
