@@ -8,7 +8,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { postVsCodeMessage } from '@/lib/utils';
-import { COST_MAP } from '../types';
 import type { TerraformFile, TerraformResource } from '../types';
 
 export function FileDetailView({ file, onBack }: { file: TerraformFile; onBack: () => void }) {
@@ -105,7 +104,6 @@ export function FileDetailView({ file, onBack }: { file: TerraformFile; onBack: 
         <TabsList>
           <TabsTrigger value="list">☰ List</TabsTrigger>
           <TabsTrigger value="graph">◎ Graph</TabsTrigger>
-          <TabsTrigger value="cost">$ Cost</TabsTrigger>
           <TabsTrigger value="raw">{'{ }'} Raw</TabsTrigger>
         </TabsList>
 
@@ -155,10 +153,6 @@ export function FileDetailView({ file, onBack }: { file: TerraformFile; onBack: 
           <GraphView file={file} selectedRes={selectedRes} onSelect={r => setSelectedRes(prev => prev?.id === r.id ? null : r)} />
         </TabsContent>
 
-        <TabsContent value="cost" className="flex-1 overflow-hidden mt-0">
-          <CostView file={file} />
-        </TabsContent>
-
         <TabsContent value="raw" className="flex-1 overflow-hidden mt-0">
           <ScrollArea className="h-full p-5">
             <pre className="text-[11px] leading-[1.7] text-[var(--tv-text2)] whitespace-pre-wrap break-all">
@@ -173,7 +167,6 @@ export function FileDetailView({ file, onBack }: { file: TerraformFile; onBack: 
 
 // ─── SIDE PANEL ────────────────────────────────────────────────
 function SidePanel({ resource: r, onClose }: { resource: TerraformResource; onClose: () => void }) {
-  const costInfo = COST_MAP[r.type];
   return (
     <ScrollArea className="h-full">
       <div className="p-[16px_18px] border-b border-[var(--tv-border)] flex items-start justify-between">
@@ -223,20 +216,6 @@ function SidePanel({ resource: r, onClose }: { resource: TerraformResource; onCl
           </div>
         )}
       </div>
-
-      {costInfo && (
-        <div className="p-[14px_18px]">
-          <div className="text-[9px] uppercase tracking-[1.2px] text-[var(--tv-text3)] mb-2.5">💰 Cost Estimate</div>
-          <div className="bg-[var(--tv-bg3)] border border-[var(--tv-border)] rounded-lg px-2.5 py-2 mb-1.5">
-            <div className="text-[var(--tv-purple)] text-[10px] mb-0.5">Monthly estimate</div>
-            <div className="text-[var(--tv-amber)] text-[14px] font-bold">
-              ${costInfo.base.toFixed(2)}{' '}
-              <span className="text-[10px] text-[var(--tv-text2)]">/{costInfo.unit}</span>
-            </div>
-          </div>
-          <div className="text-[10px] text-[var(--tv-text3)]">{costInfo.note}</div>
-        </div>
-      )}
     </ScrollArea>
   );
 }
@@ -415,66 +394,8 @@ function GraphView({ file, selectedRes, onSelect }: {
           style={{ left: tooltip.x, top: tooltip.y }}>
           <div className="font-semibold mb-1 text-[var(--tv-text)]">{tooltip.res.name}</div>
           <div className="text-[var(--tv-text3)]">{tooltip.res.type}</div>
-          {COST_MAP[tooltip.res.type] && (
-            <div className="text-[var(--tv-amber)] mt-1">~${COST_MAP[tooltip.res.type].base.toFixed(2)}/{COST_MAP[tooltip.res.type].unit}</div>
-          )}
         </div>
       )}
     </div>
-  );
-}
-
-// ─── COST VIEW ─────────────────────────────────────────────────
-function CostView({ file }: { file: TerraformFile }) {
-  const costed = file.resources.map(r => {
-    const c = COST_MAP[r.type] || { base: 0, unit: 'mo', note: 'Pricing unavailable' };
-    return { ...r, monthlyEst: c.base, unit: c.unit, note: c.note };
-  }).sort((a,b)=>b.monthlyEst-a.monthlyEst);
-  const total = costed.reduce((a,r)=>a+r.monthlyEst,0);
-  const billable = costed.filter(r=>r.monthlyEst>0);
-  const maxCost = billable[0]?.monthlyEst||1;
-  return (
-    <ScrollArea className="h-full p-5">
-      <div className="grid grid-cols-3 gap-3.5 mb-5">
-        {[
-          { num:`$${total.toFixed(2)}`,       label:'Monthly Estimate', color:'var(--tv-amber)' },
-          { num:`$${(total*12).toFixed(2)}`,   label:'Annual Estimate',  color:'var(--tv-purple)' },
-          { num:String(billable.length),        label:'Billable Resources',color:'var(--tv-text)'  },
-        ].map(s => (
-          <div key={s.label} className="rounded-[14px] border border-[var(--tv-border)] bg-[var(--tv-bg2)] p-4">
-            <div className="font-display text-2xl font-extrabold" style={{color:s.color}}>{s.num}</div>
-            <div className="text-[10px] text-[var(--tv-text3)] mt-0.5">{s.label}</div>
-          </div>
-        ))}
-      </div>
-      <div className="rounded-[14px] border border-[var(--tv-border)] overflow-hidden bg-[var(--tv-bg2)]">
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent cursor-default">
-              <TableHead>Type</TableHead><TableHead>Name</TableHead>
-              <TableHead>$/mo</TableHead><TableHead>Bar</TableHead><TableHead>Note</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {costed.map((r,i)=>(
-              <TableRow key={i} className="cursor-default">
-                <TableCell className="text-[var(--tv-purple)] text-[11px]">{r.type}</TableCell>
-                <TableCell className="font-medium text-[var(--tv-text)]">{r.name}</TableCell>
-                <TableCell style={{color:r.monthlyEst>0?'var(--tv-amber)':'var(--tv-text3)'}}>
-                  ${r.monthlyEst.toFixed(3)}
-                </TableCell>
-                <TableCell>
-                  <div className="h-1 rounded-sm" style={{
-                    width:Math.max(4,(r.monthlyEst/maxCost)*100),
-                    background:r.monthlyEst>20?'var(--tv-red)':r.monthlyEst>5?'var(--tv-amber)':'var(--tv-purple)'
-                  }}/>
-                </TableCell>
-                <TableCell className="text-[11px] text-[var(--tv-text3)]">{r.note}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    </ScrollArea>
   );
 }

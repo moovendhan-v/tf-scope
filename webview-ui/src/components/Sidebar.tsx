@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Files, Search, GitCompare, DollarSign, Settings, Database, ChevronRight } from 'lucide-react';
+import { LayoutDashboard, Files, Search, GitCompare, Settings, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
@@ -20,7 +20,6 @@ const navMain = [
 const navTools = [
   { page: 'search'   as Page, icon: Search,     label: 'Search'       },
   { page: 'diff'     as Page, icon: GitCompare, label: 'Diff / Compare'},
-  { page: 'cost'     as Page, icon: DollarSign, label: 'Cost Estimate' },
 ];
 const navAccount = [
   { page: 'settings' as Page, icon: Settings, label: 'Settings' },

@@ -24,14 +24,14 @@ export function DiffPage({ files }: { files: TerraformFile[] }) {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <div className="text-[11px] text-[var(--tv-text2)] mb-1.5">File A (Base)</div>
-            <Select value={aId} onValueChange={setAId}>
+            <Select value={aId || undefined} onValueChange={setAId}>
               <SelectTrigger><SelectValue placeholder="— Select file —" /></SelectTrigger>
               <SelectContent>{files.map(f => <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>)}</SelectContent>
             </Select>
           </div>
           <div>
             <div className="text-[11px] text-[var(--tv-text2)] mb-1.5">File B (Compare)</div>
-            <Select value={bId} onValueChange={setBId}>
+            <Select value={bId || undefined} onValueChange={setBId}>
               <SelectTrigger><SelectValue placeholder="— Select file —" /></SelectTrigger>
               <SelectContent>{files.map(f => <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>)}</SelectContent>
             </Select>
