@@ -14,6 +14,7 @@ declare global {
   interface Window {
     __tf_scope_FILES__: TerraformFile[];
     __tf_scope_CURRENT_FILE__: TerraformFile | undefined;
+    __tf_scope_FILE_CONTENT__: string | undefined;
     __tf_scope_VIEW__: 'dashboard' | 'fileDetail';
     __tf_scope_ERROR__?: string;
     __vscode__: any;
@@ -54,9 +55,8 @@ export default function App() {
   const openFile = (file: TerraformFile) => {
     setCurrentFile(file);
     setPage('fileDetail');
-    if (window.__vscode__) {
-      window.__vscode__.postMessage({ command: 'openFile', filePath: file.filePath });
-    }
+    // We do NOT send 'openFile' message here because that opens a duplicate FileDetailPanel.
+    // In-place navigation is sufficient.
   };
 
   const navigate = (p: Page) => {

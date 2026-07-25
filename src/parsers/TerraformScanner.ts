@@ -47,10 +47,8 @@ export class TerraformScanner {
       patterns.push('**/*.tfplan', '**/tfplan.json', '**/plan.json');
     }
 
-    const excludePattern = '**/node_modules/**,**/.terraform/**,**/.git/**';
-
     for (const pattern of patterns) {
-      const uris = await vscode.workspace.findFiles(pattern, excludePattern);
+      const uris = await vscode.workspace.findFiles(pattern);
       for (const uri of uris) {
         await this.parseFile(uri.fsPath);
       }
@@ -91,46 +89,40 @@ export class TerraformScanner {
     const resources: TerraformResource[] = [];
     let rid = 1;
 
-    // Parse resource blocks
-    const resourceRegex = /resource\s+"([^"]+)"\s+"([^"]+)"\s*\{([^}]*(?:\{[^}]*\}[^}]*)*)\}/gs;
-    let match;
-    while ((match = resourceRegex.exec(content)) !== null) {
-      const type = match[1];
-      const resName = match[2];
-      const body = match[3];
-      const attrs = this.extractAttrs(body);
-      const deps = this.extractDeps(body);
-      const provider = type.startsWith('aws_') ? 'AWS' : type.startsWith('azurerm_') ? 'Azure' : type.startsWith('google_') ? 'GCP' : 'OTHER';
-      resources.push({ id: rid++, type, name: resName, provider, refs: deps.length, attrs, deps });
-    }
+    // A safer way to extract blocks without catastrophic backtracking
+    // We'll just match the block headers and then extract the body manually
+    const extractBlock = (headerRegex: RegExp, typeFormat: string | ((m: RegExpExecArray) => string), nameFormat: string | ((m: RegExpExecArray) => string)) => {
+      let match;
+      while ((match = headerRegex.exec(content)) !== null) {
+        const blockStart = match.index + match[0].length;
+        let braceCount = 1;
+        let blockEnd = blockStart;
+        for (let i = blockStart; i < content.length; i++) {
+          if (content[i] === '{') braceCount++;
+          if (content[i] === '}') braceCount--;
+          if (braceCount === 0) {
+            blockEnd = i;
+            break;
+          }
+        }
+        
+        const body = content.slice(blockStart, blockEnd);
+        const typeStr = typeof typeFormat === 'function' ? typeFormat(match) : typeFormat;
+        const nameStr = typeof nameFormat === 'function' ? nameFormat(match) : nameFormat;
+        
+        const attrs = this.extractAttrs(body);
+        const deps = this.extractDeps(body);
+        
+        const provider = typeStr.startsWith('aws_') ? 'AWS' : typeStr.startsWith('azurerm_') ? 'Azure' : typeStr.startsWith('google_') ? 'GCP' : 'OTHER';
+        resources.push({ id: rid++, type: typeStr, name: nameStr, provider: provider === 'OTHER' && typeStr === 'module' || typeStr === 'output' || typeStr === 'variable' ? 'TERRAFORM' : provider, refs: deps.length, attrs, deps });
+      }
+    };
 
-    // Parse variable blocks
-    const varRegex = /variable\s+"([^"]+)"\s*\{([^}]*)\}/gs;
-    while ((match = varRegex.exec(content)) !== null) {
-      const attrs = this.extractAttrs(match[2]);
-      resources.push({ id: rid++, type: 'variable', name: match[1], provider: 'TERRAFORM', refs: 0, attrs, deps: [] });
-    }
-
-    // Parse output blocks
-    const outRegex = /output\s+"([^"]+)"\s*\{([^}]*)\}/gs;
-    while ((match = outRegex.exec(content)) !== null) {
-      const attrs = this.extractAttrs(match[2]);
-      const deps = this.extractDeps(match[2]);
-      resources.push({ id: rid++, type: 'output', name: match[1], provider: 'TERRAFORM', refs: deps.length, attrs, deps });
-    }
-
-    // Parse module blocks
-    const modRegex = /module\s+"([^"]+)"\s*\{([^}]*)\}/gs;
-    while ((match = modRegex.exec(content)) !== null) {
-      const attrs = this.extractAttrs(match[2]);
-      resources.push({ id: rid++, type: 'module', name: match[1], provider: 'TERRAFORM', refs: 0, attrs, deps: [] });
-    }
-
-    // Parse data sources
-    const dataRegex = /data\s+"([^"]+)"\s+"([^"]+)"\s*\{([^}]*)\}/gs;
-    while ((match = dataRegex.exec(content)) !== null) {
-      resources.push({ id: rid++, type: `data.${match[1]}`, name: match[2], provider: 'TERRAFORM', refs: 0, attrs: {}, deps: [] });
-    }
+    extractBlock(/resource\s+"([^"]+)"\s+"([^"]+)"\s*\{/gs, m => m[1], m => m[2]);
+    extractBlock(/variable\s+"([^"]+)"\s*\{/gs, 'variable', m => m[1]);
+    extractBlock(/output\s+"([^"]+)"\s*\{/gs, 'output', m => m[1]);
+    extractBlock(/module\s+"([^"]+)"\s*\{/gs, 'module', m => m[1]);
+    extractBlock(/data\s+"([^"]+)"\s+"([^"]+)"\s*\{/gs, m => `data.${m[1]}`, m => m[2]);
 
     const providers: string[] = [];
     if (resources.some(r => r.provider === 'AWS')) { providers.push('AWS'); }

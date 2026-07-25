@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
 import { TerraformScanner } from '../parsers/TerraformScanner';
 import { getHtmlShell } from './webviewUtils';
 
@@ -30,6 +31,16 @@ export class FileDetailPanel {
           break;
         case 'refresh':
           this._update();
+          break;
+        case 'saveFile':
+          try {
+            fs.writeFileSync(this.filePath, message.content, 'utf-8');
+            vscode.window.showInformationMessage('File saved successfully!');
+            // Wait briefly to allow file watchers to pick up the change, then refresh view
+            setTimeout(() => this._update(), 200);
+          } catch (error: any) {
+            vscode.window.showErrorMessage(`Failed to save file: ${error.message}`);
+          }
           break;
       }
     }, null, this._disposables);
@@ -91,6 +102,13 @@ window.__tf_scope_ERROR__ = ${JSON.stringify(
     const fileName = this.filePath.split(/[/\\]/).pop() ?? this.filePath;
     this._panel.title = `tf-scope: ${fileName}`;
 
+    let fileContent = '';
+    try {
+      fileContent = fs.readFileSync(this.filePath, 'utf-8');
+    } catch (e) {
+      console.error('Failed to read file content', e);
+    }
+
     this._panel.webview.html = getHtmlShell(
       this._panel.webview,
       this.extensionUri,
@@ -99,6 +117,7 @@ window.__tf_scope_ERROR__ = ${JSON.stringify(
       // __tf_scope_CURRENT_FILE__ tells it which one to open in FileDetailView.
       `window.__tf_scope_FILES__ = ${JSON.stringify(this.scanner.getFiles())};
 window.__tf_scope_CURRENT_FILE__ = ${JSON.stringify(file)};
+window.__tf_scope_FILE_CONTENT__ = ${JSON.stringify(fileContent)};
 window.__tf_scope_VIEW__ = 'fileDetail';
 window.__vscode__ = acquireVsCodeApi();`
     );

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { ArrowLeft, Copy, ExternalLink } from 'lucide-react';
+import Editor from '@monaco-editor/react';
+import { ArrowLeft, Copy, ExternalLink, Save } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,6 +13,34 @@ import type { TerraformFile, TerraformResource } from '../types';
 
 export function FileDetailView({ file, onBack }: { file: TerraformFile; onBack: () => void }) {
   const [selectedRes, setSelectedRes] = useState<TerraformResource | null>(null);
+  const [rawText, setRawText] = useState(window.__tf_scope_FILE_CONTENT__ || '');
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    // If we're in the dedicated FileDetailPanel, we might have it already injected:
+    if (window.__tf_scope_VIEW__ === 'fileDetail' && window.__tf_scope_FILE_CONTENT__) {
+      setRawText(window.__tf_scope_FILE_CONTENT__);
+    }
+
+    const handleMessage = (event: MessageEvent) => {
+      const msg = event.data;
+      if (msg.command === 'fileContent' && msg.filePath === file.filePath) {
+        setRawText(msg.content);
+      }
+    };
+    window.addEventListener('message', handleMessage);
+
+    // Always request the content just in case we are in the dashboard and navigated in-place
+    postVsCodeMessage('getFileContent', { filePath: file.filePath });
+
+    // Fallback for standalone browser testing
+    if (!(window as any).__vscode__) {
+      setRawText(`// Mock content for ${file.name}\n// (Running in standalone browser mode)\n\n` + JSON.stringify(file.resources, null, 2));
+    }
+
+    return () => window.removeEventListener('message', handleMessage);
+  }, [file.id, file.filePath]);
+
   const res = file.resources;
   const aws = res.filter(r => r.provider === 'AWS').length;
   const tf = res.filter(r => r.provider === 'TERRAFORM').length;
@@ -153,12 +182,32 @@ export function FileDetailView({ file, onBack }: { file: TerraformFile; onBack: 
           <GraphView file={file} selectedRes={selectedRes} onSelect={r => setSelectedRes(prev => prev?.id === r.id ? null : r)} />
         </TabsContent>
 
-        <TabsContent value="raw" className="flex-1 overflow-hidden mt-0">
-          <ScrollArea className="h-full p-5">
-            <pre className="text-[11px] leading-[1.7] text-[var(--tv-text2)] whitespace-pre-wrap break-all">
-              {JSON.stringify(file, null, 2)}
-            </pre>
-          </ScrollArea>
+        <TabsContent value="raw" className="flex-1 flex flex-col overflow-hidden mt-0">
+          <div className="flex justify-between items-center px-5 py-2 border-b border-[var(--tv-border)] bg-[var(--tv-bg2)] flex-shrink-0">
+            <span className="text-xs text-[var(--tv-text3)] font-mono">{file.filePath}</span>
+            <Button size="sm" variant="default" onClick={() => {
+              setIsSaving(true);
+              postVsCodeMessage('saveFile', { filePath: file.filePath, content: rawText });
+              setTimeout(() => setIsSaving(false), 800);
+            }} disabled={isSaving} className="gap-1.5 bg-[var(--tv-purple)] hover:bg-[var(--tv-purple)] hover:brightness-110 text-white">
+              <Save size={12} /> {isSaving ? 'Saving...' : 'Save File'}
+            </Button>
+          </div>
+          <div className="flex-1 overflow-hidden relative">
+            <Editor
+              height="100%"
+              language={file.type === 'tf' ? 'hcl' : 'json'}
+              theme="vs-dark"
+              value={rawText}
+              onChange={(value) => setRawText(value || '')}
+              options={{
+                minimap: { enabled: false },
+                fontSize: 12,
+                scrollBeyondLastLine: false,
+                wordWrap: 'on'
+              }}
+            />
+          </div>
         </TabsContent>
       </Tabs>
     </div>

@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
 import { TerraformScanner } from '../parsers/TerraformScanner';
 import { getHtmlShell } from './webviewUtils';
 
@@ -31,6 +32,23 @@ export class DashboardPanel {
         case 'copyText':
           await vscode.env.clipboard.writeText(message.text);
           vscode.window.showInformationMessage('Copied to clipboard!');
+          break;
+        case 'getFileContent':
+          try {
+            const content = fs.readFileSync(message.filePath, 'utf-8');
+            this._panel.webview.postMessage({ command: 'fileContent', filePath: message.filePath, content });
+          } catch (e) {
+            console.error('Failed to read file content', e);
+          }
+          break;
+        case 'saveFile':
+          try {
+            fs.writeFileSync(message.filePath || (message as any).file?.filePath, message.content, 'utf-8');
+            vscode.window.showInformationMessage('File saved successfully!');
+            // Let the watcher pick it up and refresh
+          } catch (e: any) {
+            vscode.window.showErrorMessage(`Failed to save file: ${e.message}`);
+          }
           break;
       }
     }, null, this._disposables);

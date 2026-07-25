@@ -4,13 +4,14 @@ import { TerraformScanner, TerraformFile } from '../parsers/TerraformScanner';
 
 export class TfScopeFileItem extends vscode.TreeItem {
   constructor(
-    public readonly label: string,
-    public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+    label: string,
+    collapsibleState: vscode.TreeItemCollapsibleState,
     public readonly filePath?: string,
     public readonly itemType?: 'group' | 'file' | 'resource',
     public readonly tfFile?: TerraformFile
   ) {
     super(label, collapsibleState);
+    this.id = filePath ? filePath : `group-${label}`;
 
     if (itemType === 'file' && tfFile) {
       this.description = `${tfFile.resources.length} resources`;
@@ -41,13 +42,13 @@ export class TfScopeFileItem extends vscode.TreeItem {
 }
 
 export class TfScopeFileProvider implements vscode.TreeDataProvider<TfScopeFileItem> {
-  private _onDidChangeTreeData = new vscode.EventEmitter<TfScopeFileItem | undefined | void>();
+  private _onDidChangeTreeData = new vscode.EventEmitter<TfScopeFileItem | undefined | null | void>();
   readonly onDidChangeTreeData = this._onDidChangeTreeData.event;
 
   constructor(private scanner: TerraformScanner) { }
 
-  refresh(): void {
-    this._onDidChangeTreeData.fire();
+  refresh(): void { 
+    this._onDidChangeTreeData.fire(null); // passing null explicitly forces root refresh in all VS Code versions
   }
 
   getTreeItem(element: TfScopeFileItem): vscode.TreeItem {
@@ -64,7 +65,7 @@ export class TfScopeFileProvider implements vscode.TreeDataProvider<TfScopeFileI
     return [];
   }
 
-  private getRootItems(): TfScopeFileItem[] {
+  private getRootItems(): TfScopeFileItem[] { console.log("GET ROOT ITEMS CALLED, files count: " + this.scanner.getFiles().length); 
     const files = this.scanner.getFiles();
     if (files.length === 0) {
       const empty = new TfScopeFileItem(
